@@ -91,9 +91,9 @@
     <main class="layout">
         <section class="tasks-section" aria-labelledby="tasksHeading">
             <div class="section-header">
-                <h2 id="tasksHeading">Today's Study Tasks</h2>
+                <h2 id="tasksHeading">আজকের পড়ার টপিক</h2>
                 <button id="addTaskBtn" class="add-task-btn" type="button">
-                    + Add Task
+                    + নতুন টাস্ক যোগ করুন
                 </button>
             </div>
             <ul id="taskList" class="task-list" aria-live="polite">
@@ -101,12 +101,12 @@
             </ul>
             <template id="taskItemTemplate">
                 <li class="task-item">
-                    <label class="task-row">
+                    <div class="task-row">
                         <input type="checkbox" class="task-check" />
                         <span class="check-decor" aria-hidden="true"></span>
                         <span class="duration" contenteditable="true" data-placeholder="Duration">20 min</span>
                         <span class="task-title" contenteditable="true" data-placeholder="Task title">New Task</span>
-                    </label>
+                    </div>
                     <button class="delete-task" title="Delete task" aria-label="Delete task">
                         ✕
                     </button>

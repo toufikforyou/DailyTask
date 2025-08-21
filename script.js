@@ -108,11 +108,22 @@
       checkbox.checked = true;
     }
 
-    checkbox.addEventListener("change", () => {
+      checkbox.addEventListener("change", () => {
       li.classList.toggle("done", checkbox.checked);
       data.done = checkbox.checked;
       persistTasks();
     });
+
+    const checkDecor = li.querySelector('.check-decor');
+
+    // Make the visual checkbox (.check-decor) toggle the real checkbox
+      if(checkDecor){
+        checkDecor.addEventListener('click', (e) => {
+          e.preventDefault();
+          checkbox.checked = !checkbox.checked;
+          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      }
 
     function handleEdit(e) {
       // Remove line breaks
@@ -120,8 +131,8 @@
         e.preventDefault();
         document.execCommand("undo");
       }
-      data.duration = durationEl.textContent.trim();
-      data.title = titleEl.textContent.trim();
+  data.duration = durationEl.textContent.trim();
+  data.title = titleEl.textContent.trim();
       persistTasks();
     }
     durationEl.addEventListener("input", handleEdit);
