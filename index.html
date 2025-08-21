@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediTrack – Study Today, Save Lives Tomorrow</title>
+  <meta name="description" content="MediTrack – A clean medical student daily study planner and vocabulary tracker." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,600&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="notebook-background"></div>
+  <header class="app-header">
+    <div class="title-block">
+      <h1>MediTrack <span class="tagline">Study Today, Save Lives Tomorrow</span></h1>
+    </div>
+    <div class="date-block" id="dateBlock" aria-label="Current date">
+      <div class="date-box" id="dayBox">--</div>
+      <div class="date-box" id="monthBox">---</div>
+      <div class="date-box" id="yearBox">----</div>
+    </div>
+    <div class="performance-block">
+      <div class="stars" id="starRating" aria-label="Daily performance rating" role="radiogroup">
+        <button class="star" data-value="1" aria-label="1 star" aria-checked="false">★</button>
+        <button class="star" data-value="2" aria-label="2 stars" aria-checked="false">★</button>
+        <button class="star" data-value="3" aria-label="3 stars" aria-checked="false">★</button>
+        <button class="star" data-value="4" aria-label="4 stars" aria-checked="false">★</button>
+        <button class="star" data-value="5" aria-label="5 stars" aria-checked="false">★</button>
+      </div>
+      <div class="total-hours">
+        <label for="totalHours">Total Study Hours</label>
+        <input type="number" id="totalHours" min="0" step="0.25" placeholder="0" />
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="tasks-section" aria-labelledby="tasksHeading">
+      <div class="section-header">
+        <h2 id="tasksHeading">Today's Study Tasks</h2>
+        <button id="addTaskBtn" class="add-task-btn" type="button">+ Add Task</button>
+      </div>
+      <ul id="taskList" class="task-list" aria-live="polite">
+        <!-- Sample predefined tasks -->
+      </ul>
+      <template id="taskItemTemplate">
+        <li class="task-item">
+          <label class="task-row">
+            <input type="checkbox" class="task-check" />
+            <span class="check-decor" aria-hidden="true"></span>
+            <span class="duration" contenteditable="true" data-placeholder="Duration">20 min</span>
+            <span class="task-title" contenteditable="true" data-placeholder="Task title">New Task</span>
+          </label>
+          <button class="delete-task" title="Delete task" aria-label="Delete task">✕</button>
+        </li>
+      </template>
+      <div class="mini-hint">Tip: Click duration or title to edit. Changes auto-save.</div>
+    </section>
+
+    <aside class="sidebar" aria-label="Reflection and planning">
+      <h2 class="sr-only">Reflection</h2>
+      <div class="note-box">
+        <label for="priorityTask">Today's Priority Task</label>
+        <textarea id="priorityTask" rows="2" placeholder="Focus item..."></textarea>
+      </div>
+      <div class="note-box">
+        <label for="whyStudy">Why today's study is important</label>
+        <textarea id="whyStudy" rows="3" placeholder="Motivation..."></textarea>
+      </div>
+      <div class="note-box">
+        <label for="difficultSubject">Most Difficult Subject</label>
+        <textarea id="difficultSubject" rows="2" placeholder="Topic / concept..."></textarea>
+      </div>
+      <div class="note-box">
+        <label for="pendingTomorrow">Pending Task for Tomorrow</label>
+        <textarea id="pendingTomorrow" rows="2" placeholder="Carry-over..."></textarea>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer" aria-labelledby="vocabHeading">
+    <div class="vocab-box">
+      <div class="vocab-header">
+        <h2 id="vocabHeading">Word of the Day</h2>
+        <button id="shuffleWord" type="button" class="shuffle-btn" aria-label="Shuffle vocabulary">↺</button>
+      </div>
+      <div id="vocabContent" class="vocab-content">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+    <div class="app-meta">MediTrack © <span id="yearCopy"></span></div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
