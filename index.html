@@ -7,11 +7,11 @@
     <title>Study Planner</title>
     <meta name="description"
         content="MediTrack – A clean medical student daily study planner and vocabulary tracker." />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
         href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,600&family=Shadows+Into+Light&display=swap"
-        rel="stylesheet">
+        rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -34,37 +34,32 @@
         <table class="target-table" role="grid">
             <thead>
                 <tr>
-                    <th scope="col">১. আমার টার্গেট (ঘন্টায়)</th>
-                    <th scope="col">২. টার্গেট পূরণ (ঘন্টায়)</th>
-                    <th scope="col">৩. টার্গেট ঘাটতি / বেশি</th>
-                    <th scope="col">৪. টার্গেট রেটিং</th>
+                    <th scope="col">🎯 আমার টার্গেট (ঘন্টায়)</th>
+                    <th scope="col">✅ টার্গেট পূরণ (ঘন্টায়)</th>
+                    <th scope="col">Δ টার্গেট ঘাটতি / বেশি</th>
+                    <th scope="col">⭐ টার্গেট রেটিং</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td data-label="আমার টার্গেট">
+                    <td data-label="My Target">
                         <input type="number" id="targetHours" min="0" step="0.25" placeholder="0"
-                            aria-label="Target hours">
+                            aria-label="Target hours" />
                     </td>
-                    <td data-label="টার্গেট পূরণ">
+                    <td data-label="Target Achieved">
                         <input type="number" id="fulfilledHours" min="0" step="0.25" placeholder="0"
-                            aria-label="Fulfilled hours">
+                            aria-label="Target achieved hours" />
                     </td>
-                    <td data-label="টার্গেট ঘাটতি/বেশি">
+                    <td data-label="Surplus / Deficit">
                         <span id="targetDifference" class="target-diff" aria-live="polite">—</span>
                     </td>
-                    <td data-label="টার্গেট রেটিং">
-                        <div class="target-rating" id="targetRating" aria-label="Target rating" role="radiogroup">
-                            <button class="target-star" data-value="1" aria-label="1" aria-checked="false"
-                                type="button">★</button>
-                            <button class="target-star" data-value="2" aria-label="2" aria-checked="false"
-                                type="button">★</button>
-                            <button class="target-star" data-value="3" aria-label="3" aria-checked="false"
-                                type="button">★</button>
-                            <button class="target-star" data-value="4" aria-label="4" aria-checked="false"
-                                type="button">★</button>
-                            <button class="target-star" data-value="5" aria-label="5" aria-checked="false"
-                                type="button">★</button>
+                    <td data-label="Target Rating">
+                        <div class="target-rating" id="targetRating" aria-label="Target rating" role="img">
+                            <span class="rating-star" data-star="1">★</span>
+                            <span class="rating-star" data-star="2">★</span>
+                            <span class="rating-star" data-star="3">★</span>
+                            <span class="rating-star" data-star="4">★</span>
+                            <span class="rating-star" data-star="5">★</span>
                         </div>
                     </td>
                 </tr>
@@ -77,7 +72,9 @@
         <table class="notes-table" role="grid">
             <thead>
                 <tr>
-                    <th id="previousHeading" scope="col">বিগত দিনে যা পড়া হয়নি/ কোন গুরুত্বপূর্ন নোট</th>
+                    <th id="previousHeading" scope="col">
+                        বিগত দিনে যা পড়া হয়নি/ কোন গুরুত্বপূর্ন নোট
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -95,7 +92,9 @@
         <section class="tasks-section" aria-labelledby="tasksHeading">
             <div class="section-header">
                 <h2 id="tasksHeading">Today's Study Tasks</h2>
-                <button id="addTaskBtn" class="add-task-btn" type="button">+ Add Task</button>
+                <button id="addTaskBtn" class="add-task-btn" type="button">
+                    + Add Task
+                </button>
             </div>
             <ul id="taskList" class="task-list" aria-live="polite">
                 <!-- Sample predefined tasks -->
@@ -108,10 +107,14 @@
                         <span class="duration" contenteditable="true" data-placeholder="Duration">20 min</span>
                         <span class="task-title" contenteditable="true" data-placeholder="Task title">New Task</span>
                     </label>
-                    <button class="delete-task" title="Delete task" aria-label="Delete task">✕</button>
+                    <button class="delete-task" title="Delete task" aria-label="Delete task">
+                        ✕
+                    </button>
                 </li>
             </template>
-            <div class="mini-hint">Tip: Click duration or title to edit. Changes auto-save.</div>
+            <div class="mini-hint">
+                Tip: Click duration or title to edit. Changes auto-save.
+            </div>
         </section>
 
         <aside class="sidebar" aria-label="Reflection and planning">
@@ -139,7 +142,9 @@
         <div class="vocab-box">
             <div class="vocab-header">
                 <h2 id="vocabHeading">Word of the Day</h2>
-                <button id="shuffleWord" type="button" class="shuffle-btn" aria-label="Shuffle vocabulary">↺</button>
+                <button id="shuffleWord" type="button" class="shuffle-btn" aria-label="Shuffle vocabulary">
+                    ↺
+                </button>
             </div>
             <div id="vocabContent" class="vocab-content">
                 <!-- Filled by JS -->

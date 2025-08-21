@@ -85,29 +85,18 @@ body {
 }
 .target-rating {
   display: flex;
-  gap: 0.25rem;
   justify-content: center;
-}
-.target-rating {
-  display: flex;
   gap: 0.25rem;
-  justify-content: center;
-  pointer-events: none;
+  font-size: 1.1rem;
+  min-width: 90px;
 }
-.target-star {
-  background: transparent;
-  border: none;
-  font-size: 1.15rem;
-  cursor: default;
-  color: #9cbaf5;
-  transition: transform 0.15s, color 0.2s;
+.rating-star {
+  color: #b7c9ea;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
+  transition: color 0.25s, transform 0.2s;
 }
-.target-star.active {
+.rating-star.active {
   color: var(--pink);
-}
-.target-star:focus-visible {
-  outline: 2px solid var(--pink);
-  outline-offset: 2px;
 }
 
 @media (max-width: 760px) {
