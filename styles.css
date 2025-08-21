@@ -202,23 +202,40 @@ body {
 }
 
 .app-header {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 2rem;
-  align-items: center;
-  padding: 1.2rem 2rem 1rem;
+  padding: 1.5rem 2rem 1.2rem;
   border-bottom: 3px double var(--pink-soft);
   position: sticky;
-  top: 0;
-  backdrop-filter: blur(6px);
-  background: rgba(255, 255, 255, 0.85);
+  top: 0px;
+  backdrop-filter: blur(8px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(13, 86, 221, 0.02)
+  );
+  box-shadow: none;
   z-index: 10;
+  border-radius: 0;
+  margin-bottom: 1rem;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: center;
 }
 .app-header h1 {
   margin: 0;
-  font-size: 1.9rem;
+  font-size: 2.2rem;
   font-weight: 700;
   letter-spacing: 0.5px;
+  background: linear-gradient(135deg, var(--pink), #0d56dd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
 }
 .tagline {
   display: block;
@@ -712,11 +729,12 @@ body {
 }
 @media (max-width: 720px) {
   .app-header {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    padding: 1.2rem 1rem;
+    text-align: center;
   }
-  .performance-block {
-    justify-content: space-between;
+  .header-inner {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   .layout {
     padding: 1rem 1rem 2.5rem;
