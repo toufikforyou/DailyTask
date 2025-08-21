@@ -12,18 +12,8 @@
   const monthBox = qs("#monthBox");
   const yearBox = qs("#yearBox");
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
   dayBox.textContent = String(now.getDate()).padStart(2, "0");
   monthBox.textContent = monthNames[now.getMonth()];
@@ -48,6 +38,10 @@
     pendingTomorrow: qs("#pendingTomorrow"),
     previousNotes: qs("#previousNotes"),
   };
+  // Sidebar dynamic lists & extras
+  const sidebarBoxes = qsa('.sidebar .note-box');
+  const prayerIds = ['fajr','dhuhr','asr','maghrib','isha'];
+  const wastedTimeInput = qs('#wastedTimeInput');
 
   // Vocabulary
   const vocabEl = qs("#vocabContent");
@@ -59,11 +53,7 @@
     { word: "Alleviate", syn: "Relieve", extra: ["Ease", "Mitigate"] },
     { word: "Benign", syn: "Harmless", extra: ["Mild", "Kind"] },
     { word: "Pragmatic", syn: "Practical", extra: ["Realistic", "Sensible"] },
-    {
-      word: "Diligent",
-      syn: "Hardworking",
-      extra: ["Industrious", "Persistent"],
-    },
+    { word: "Diligent", syn: "Hardworking", extra: ["Industrious", "Persistent"] },
     { word: "Vital", syn: "Essential", extra: ["Crucial", "Key"] },
     { word: "Transient", syn: "Temporary", extra: ["Passing", "Brief"] },
     { word: "Equitable", syn: "Fair", extra: ["Impartial", "Just"] },
@@ -87,12 +77,14 @@
     });
   }
 
-  shuffleBtn.addEventListener("click", () => {
-    const words = pickWords();
-    renderVocabulary(words);
-    state.vocab = words.map((w) => w.word);
-    saveState();
-  });
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener("click", () => {
+      const words = pickWords();
+      renderVocabulary(words);
+      state.vocab = words.map((w) => w.word);
+      saveState();
+    });
+  }
 
   // Tasks
   function createTask(data) {
@@ -108,31 +100,28 @@
       checkbox.checked = true;
     }
 
-      checkbox.addEventListener("change", () => {
+    checkbox.addEventListener("change", () => {
       li.classList.toggle("done", checkbox.checked);
       data.done = checkbox.checked;
       persistTasks();
     });
 
     const checkDecor = li.querySelector('.check-decor');
-
-    // Make the visual checkbox (.check-decor) toggle the real checkbox
-      if(checkDecor){
-        checkDecor.addEventListener('click', (e) => {
-          e.preventDefault();
-          checkbox.checked = !checkbox.checked;
-          checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-      }
+    if(checkDecor){
+      checkDecor.addEventListener('click', (e) => {
+        e.preventDefault();
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    }
 
     function handleEdit(e) {
-      // Remove line breaks
       if (e.inputType === "insertParagraph") {
         e.preventDefault();
         document.execCommand("undo");
       }
-  data.duration = durationEl.textContent.trim();
-  data.title = titleEl.textContent.trim();
+      data.duration = durationEl.textContent.trim();
+      data.title = titleEl.textContent.trim();
       persistTasks();
     }
     durationEl.addEventListener("input", handleEdit);
@@ -156,7 +145,6 @@
     saveState();
   }
 
-  // Helper to find first invalid task field
   function findInvalidTaskField(){
     const items = qsa('.task-item');
     for(const li of items){
@@ -164,7 +152,7 @@
       const title = li.querySelector('.task-title');
       const d = (dur.textContent || '').trim();
       const t = (title.textContent || '').trim();
-    const isDefault = (d.toLowerCase() === '20 min' && t === '');
+      const isDefault = (d.toLowerCase() === '20 min' && t === '');
       if(!d || !t || isDefault){
         return { li, field: !d ? dur : (!t ? title : title) };
       }
@@ -172,38 +160,18 @@
     return null;
   }
 
-  function showAddValidation(){
-    const header = document.querySelector('.tasks-section .section-header');
-    if(!header) return;
-    // Avoid duplicates
-    let msg = header.querySelector('.validation-msg');
-    if(!msg){
-      msg = document.createElement('span');
-      msg.className = 'validation-msg';
-      header.appendChild(msg);
-    }
-    msg.textContent = 'Complete the current task before adding a new one';
-    header.classList.add('shake');
-    setTimeout(()=> header.classList.remove('shake'), 400);
-  }
-
   addTaskBtn.addEventListener('click', () => {
     const invalid = findInvalidTaskField();
     if(invalid){
-      // Card-level validation: highlight the task item border, no inline message
       const li = invalid.li;
       li.classList.add('invalid');
-      // Trigger shake animation for attention
       li.classList.remove('shake');
-      // reflow to restart animation
       void li.offsetWidth;
       li.classList.add('shake');
-      // Focus the title for quick editing
       const titleEl = li.querySelector('.task-title');
       if(titleEl){
         titleEl.focus();
       }
-      // Remove invalid state once user starts editing any field in the card
       const clearInvalid = () => {
         li.classList.remove('invalid');
         li.classList.remove('shake');
@@ -212,7 +180,7 @@
       li.addEventListener('input', clearInvalid, true);
       return;
     }
-  const data = {duration:'20 min', title:'', done:false};
+    const data = {duration:'20 min', title:'', done:false};
     const el = createTask(data);
     taskList.appendChild(el);
     state.tasks.push(data);
@@ -220,7 +188,6 @@
     el.querySelector('.task-title').focus();
   });
 
-  // Star rating (optional if header stars exist)
   if (starRating) {
     starRating.addEventListener("click", (e) => {
       if (e.target.classList.contains("star")) {
@@ -233,7 +200,7 @@
   }
 
   function updateStars() {
-    if (!starRating) return; // gracefully skip if removed
+    if (!starRating) return;
     qsa(".star").forEach((st) => {
       const active = Number(st.dataset.value) <= (state.stars || 0);
       st.classList.toggle("active", active);
@@ -241,7 +208,6 @@
     });
   }
 
-  // Total hours (guarded: element may have been removed from DOM)
   if (totalHours) {
     totalHours.addEventListener("input", () => {
       state.totalHours = totalHours.value;
@@ -249,13 +215,109 @@
     });
   }
 
-  // Notes
   Object.entries(noteFields).forEach(([k, el]) => {
+    if (!el) return;
     el.addEventListener("input", () => {
       state.notes[k] = el.value;
       saveState();
     });
   });
+
+  // Setup dynamic note lists with plus buttons
+  function setupSidebarAdds(){
+    sidebarBoxes.forEach(box => {
+      const key = box.getAttribute('data-box');
+      const plusBtn = box.querySelector('.plus-btn');
+      const input = box.querySelector('.input-with-plus .note-input');
+      const list = box.querySelector('.note-list');
+      
+      if(!plusBtn || !input || !list) return;
+      
+      // Render existing items with remove buttons
+      const renderList = () => {
+        list.innerHTML = '';
+        const arr = (state.notes[key+':list'] || []);
+        arr.forEach((text, index) => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span>${text}</span>
+            <button type="button" class="remove-item" data-index="${index}">×</button>
+          `;
+          list.appendChild(li);
+        });
+      };
+      
+      renderList();
+      
+      // Add item function
+      const addItem = () => {
+        const val = (input.value || '').trim();
+        if(!val) return;
+        
+        const current = (state.notes[key+':list'] || []);
+        current.push(val);
+        state.notes[key+':list'] = current;
+        saveState();
+        
+        input.value = '';
+        renderList();
+      };
+      
+      // Plus button click
+      plusBtn.addEventListener('click', addItem);
+      
+      // Enter key in input
+      input.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') {
+          addItem();
+        }
+      });
+      
+      // Remove item clicks
+      list.addEventListener('click', (e) => {
+        if(e.target.classList.contains('remove-item')) {
+          const index = parseInt(e.target.dataset.index);
+          const current = (state.notes[key+':list'] || []);
+          current.splice(index, 1);
+          state.notes[key+':list'] = current;
+          saveState();
+          renderList();
+        }
+      });
+    });
+  }
+  setupSidebarAdds();
+
+  // Prayers persistence
+  function loadPrayers(){
+    const saved = state.notes.prayers || {};
+    prayerIds.forEach(id => {
+      const el = qs('#prayer-'+id);
+      if(el){ el.checked = !!saved[id]; }
+    });
+  }
+  function bindPrayers(){
+    prayerIds.forEach(id => {
+      const el = qs('#prayer-'+id);
+      if(!el) return;
+      el.addEventListener('change', () => {
+        if(!state.notes.prayers) state.notes.prayers = {};
+        state.notes.prayers[id] = el.checked;
+        saveState();
+      });
+    });
+  }
+  loadPrayers();
+  bindPrayers();
+
+  // Wasted time single input
+  if(wastedTimeInput){
+    wastedTimeInput.value = state.notes.wastedTime || '';
+    wastedTimeInput.addEventListener('input', () => {
+      state.notes.wastedTime = wastedTimeInput.value;
+      saveState();
+    });
+  }
 
   // Persistence helpers
   function loadState() {
@@ -290,11 +352,7 @@
   }
   function sampleTasks() {
     return [
-      {
-        duration: "20 min",
-        title: "International pocket book (3 pages)",
-        done: false,
-      },
+      { duration: "20 min", title: "International pocket book (3 pages)", done: false },
       { duration: "30 min", title: "Vocabulary pocket book", done: false },
       { duration: "1 hour", title: "MedWords review", done: false },
       { duration: "45 min", title: "Anatomy diagrams", done: false },
@@ -307,11 +365,12 @@
     totalHours.value = state.totalHours || "";
   }
   Object.entries(noteFields).forEach(([k, el]) => {
-    el.value = state.notes[k] || "";
+    if (el) {
+      el.value = state.notes[k] || "";
+    }
   });
   updateStars();
   if (state.vocab && state.vocab.length) {
-    // Map stored word names back to objects
     const words = state.vocab
       .map((name) => vocabulary.find((v) => v.word === name))
       .filter(Boolean);
@@ -321,7 +380,7 @@
     renderVocabulary(pickWords());
   }
 
-  // --- Target summary init & logic ---
+  // Target summary logic
   function bindTargetInputs() {
     if (!targetHoursInput || !fulfilledHoursInput) return false;
     targetHoursInput.value = state.targetSummary.target || "";
@@ -336,8 +395,8 @@
     evts.forEach((evt) => fulfilledHoursInput.addEventListener(evt, recalc));
     return true;
   }
+  
   if (!bindTargetInputs()) {
-    // Fallback retry if DOM not ready (defensive)
     let attempts = 0;
     const retry = setInterval(() => {
       attempts++;
@@ -398,7 +457,6 @@
   function persistTargetSummary() {
     state.targetSummary.target = targetHoursInput.value;
     state.targetSummary.fulfilled = fulfilledHoursInput.value;
-    // rating recalculated automatically
     saveState();
   }
 

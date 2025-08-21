@@ -119,21 +119,53 @@
 
         <aside class="sidebar" aria-label="Reflection and planning">
             <h2 class="sr-only">Reflection</h2>
-            <div class="note-box">
-                <label for="priorityTask">Today's Priority Task</label>
-                <textarea id="priorityTask" rows="2" placeholder="Focus item..."></textarea>
+            <!-- New: Today live/offline classes -->
+            <div class="note-box" data-box="liveClasses">
+                <label>আজকের লাইভ/অফলাইন ক্লাস</label>
+                <ul class="note-list" id="list-liveClasses"></ul>
+                <div class="input-with-plus">
+                    <input type="text" class="note-input" placeholder="ক্লাসের টপিক লিখুন" />
+                    <button type="button" class="plus-btn">+</button>
+                </div>
             </div>
-            <div class="note-box">
-                <label for="whyStudy">Why today's study is important</label>
-                <textarea id="whyStudy" rows="3" placeholder="Motivation..."></textarea>
+
+            <!-- New: Today exam / obtained marks -->
+            <div class="note-box" data-box="examMarks">
+                <label>আজকের পরিক্ষা / প্রাপ্ত মার্ক</label>
+                <ul class="note-list" id="list-examMarks"></ul>
+                <div class="input-with-plus">
+                    <input type="text" class="note-input" placeholder="পরিক্ষা / মার্ক লিখুন" />
+                    <button type="button" class="plus-btn">+</button>
+                </div>
             </div>
-            <div class="note-box">
-                <label for="difficultSubject">Most Difficult Subject</label>
-                <textarea id="difficultSubject" rows="2" placeholder="Topic / concept..."></textarea>
+
+            <!-- New: Recorded classes -->
+            <div class="note-box" data-box="recordedClasses">
+                <label>রেকের্ডেড ক্লাস</label>
+                <ul class="note-list" id="list-recordedClasses"></ul>
+                <div class="input-with-plus">
+                    <input type="text" class="note-input" placeholder="রেকর্ডেড ক্লাসের টপিক" />
+                    <button type="button" class="plus-btn">+</button>
+                </div>
             </div>
-            <div class="note-box">
-                <label for="pendingTomorrow">Pending Task for Tomorrow</label>
-                <textarea id="pendingTomorrow" rows="2" placeholder="Carry-over..."></textarea>
+
+            <!-- New: Prayers checklist -->
+            <div class="note-box" data-box="prayers">
+                <label>নামায কমপ্লিট</label>
+                <div class="prayers-grid">
+                    <label class="prayer-item"><input type="checkbox" id="prayer-fajr" /> ফজর</label>
+                    <label class="prayer-item"><input type="checkbox" id="prayer-dhuhr" /> জোহর</label>
+                    <label class="prayer-item"><input type="checkbox" id="prayer-asr" /> আসর</label>
+                    <label class="prayer-item"><input type="checkbox" id="prayer-maghrib" /> মাগরিব</label>
+                    <label class="prayer-item"><input type="checkbox" id="prayer-isha" /> ইশা</label>
+                </div>
+            </div>
+
+            <!-- New: Wasted time single input -->
+            <div class="note-box" data-box="wastedTime">
+                <label for="wastedTimeInput">অযথা সময় নষ্ট করেছি।</label>
+                <input id="wastedTimeInput" type="text" class="note-input-line"
+                    placeholder="কি কি ভাবে নষ্ট করেছি লিখুন..." />
             </div>
         </aside>
     </main>
