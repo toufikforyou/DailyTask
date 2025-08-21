@@ -102,7 +102,7 @@
     const titleEl = li.querySelector(".task-title");
 
     durationEl.textContent = data.duration || "20 min";
-    titleEl.textContent = data.title || "New Task";
+    titleEl.textContent = data.title || "";
     if (data.done) {
       li.classList.add("done");
       checkbox.checked = true;
@@ -156,13 +156,68 @@
     saveState();
   }
 
-  addTaskBtn.addEventListener("click", () => {
-    const data = { duration: "20 min", title: "New Task", done: false };
+  // Helper to find first invalid task field
+  function findInvalidTaskField(){
+    const items = qsa('.task-item');
+    for(const li of items){
+      const dur = li.querySelector('.duration');
+      const title = li.querySelector('.task-title');
+      const d = (dur.textContent || '').trim();
+      const t = (title.textContent || '').trim();
+    const isDefault = (d.toLowerCase() === '20 min' && t === '');
+      if(!d || !t || isDefault){
+        return { li, field: !d ? dur : (!t ? title : title) };
+      }
+    }
+    return null;
+  }
+
+  function showAddValidation(){
+    const header = document.querySelector('.tasks-section .section-header');
+    if(!header) return;
+    // Avoid duplicates
+    let msg = header.querySelector('.validation-msg');
+    if(!msg){
+      msg = document.createElement('span');
+      msg.className = 'validation-msg';
+      header.appendChild(msg);
+    }
+    msg.textContent = 'Complete the current task before adding a new one';
+    header.classList.add('shake');
+    setTimeout(()=> header.classList.remove('shake'), 400);
+  }
+
+  addTaskBtn.addEventListener('click', () => {
+    const invalid = findInvalidTaskField();
+    if(invalid){
+      // Card-level validation: highlight the task item border, no inline message
+      const li = invalid.li;
+      li.classList.add('invalid');
+      // Trigger shake animation for attention
+      li.classList.remove('shake');
+      // reflow to restart animation
+      void li.offsetWidth;
+      li.classList.add('shake');
+      // Focus the title for quick editing
+      const titleEl = li.querySelector('.task-title');
+      if(titleEl){
+        titleEl.focus();
+      }
+      // Remove invalid state once user starts editing any field in the card
+      const clearInvalid = () => {
+        li.classList.remove('invalid');
+        li.classList.remove('shake');
+        li.removeEventListener('input', clearInvalid, true);
+      };
+      li.addEventListener('input', clearInvalid, true);
+      return;
+    }
+  const data = {duration:'20 min', title:'', done:false};
     const el = createTask(data);
     taskList.appendChild(el);
     state.tasks.push(data);
     persistTasks();
-    el.querySelector(".task-title").focus();
+    el.querySelector('.task-title').focus();
   });
 
   // Star rating (optional if header stars exist)
