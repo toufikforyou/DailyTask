@@ -43,49 +43,6 @@
   const prayerIds = ['fajr','dhuhr','asr','maghrib','isha'];
   const wastedTimeInput = qs('#wastedTimeInput');
 
-  // Vocabulary
-  const vocabEl = qs("#vocabContent");
-  const shuffleBtn = qs("#shuffleWord");
-  const vocabulary = [
-    { word: "Amicable", syn: "Friendly", extra: ["Cordial", "Good-natured"] },
-    { word: "Bargain", syn: "Negotiate", extra: ["Deal", "Haggle"] },
-    { word: "Candid", syn: "Frank", extra: ["Honest", "Open"] },
-    { word: "Alleviate", syn: "Relieve", extra: ["Ease", "Mitigate"] },
-    { word: "Benign", syn: "Harmless", extra: ["Mild", "Kind"] },
-    { word: "Pragmatic", syn: "Practical", extra: ["Realistic", "Sensible"] },
-    { word: "Diligent", syn: "Hardworking", extra: ["Industrious", "Persistent"] },
-    { word: "Vital", syn: "Essential", extra: ["Crucial", "Key"] },
-    { word: "Transient", syn: "Temporary", extra: ["Passing", "Brief"] },
-    { word: "Equitable", syn: "Fair", extra: ["Impartial", "Just"] },
-  ];
-
-  function pickWords(count = 4) {
-    const shuffled = [...vocabulary].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, count);
-  }
-
-  function renderVocabulary(words) {
-    vocabEl.innerHTML = "";
-    words.forEach((w) => {
-      const div = document.createElement("div");
-      div.className = "word-card";
-      div.innerHTML =
-        `<span class="word">${w.word} ↔ ${w.syn}</span>` +
-        `<span class="definition">Synonyms</span>` +
-        `<div class="syns">${[w.syn, ...w.extra].join(", ")}</div>`;
-      vocabEl.appendChild(div);
-    });
-  }
-
-  if (shuffleBtn) {
-    shuffleBtn.addEventListener("click", () => {
-      const words = pickWords();
-      renderVocabulary(words);
-      state.vocab = words.map((w) => w.word);
-      saveState();
-    });
-  }
-
   // Tasks
   function createTask(data) {
     const li = template.content.firstElementChild.cloneNode(true);
@@ -329,7 +286,6 @@
           stars: 0,
           totalHours: "",
           notes: {},
-          vocab: [],
           targetSummary: { target: "", fulfilled: "", rating: 0 },
         };
       const parsed = JSON.parse(raw);
@@ -342,7 +298,6 @@
         stars: 0,
         totalHours: "",
         notes: {},
-        vocab: [],
         targetSummary: { target: "", fulfilled: "", rating: 0 },
       };
     }
@@ -370,15 +325,6 @@
     }
   });
   updateStars();
-  if (state.vocab && state.vocab.length) {
-    const words = state.vocab
-      .map((name) => vocabulary.find((v) => v.word === name))
-      .filter(Boolean);
-    if (words.length) renderVocabulary(words);
-    else renderVocabulary(pickWords());
-  } else {
-    renderVocabulary(pickWords());
-  }
 
   // Target summary logic
   function bindTargetInputs() {
