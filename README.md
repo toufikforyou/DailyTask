@@ -6,6 +6,8 @@ Minimalistic medical student daily study planner & vocabulary notebook.
 
 - Header with date, daily performance stars, total study hours field
 - Daily target summary table (বাংলা শিরোনাম): target hours, fulfilled hours, difference (ঘাটতি/বেশি), target rating
+- Automatic target rating (fulfilled ÷ target) + difference calculation
+- Previous days missed / important notes section with Bengali heading
 - Editable task list with duration + title, dragless inline editing, persistent via localStorage
 - Blue accented handwritten-style checkmarks when completed
 - Reflection sidebar (priority, motivation, difficult subject, tomorrow pending)

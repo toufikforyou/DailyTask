@@ -26,53 +26,70 @@
             <div class="date-box" id="monthBox">---</div>
             <div class="date-box" id="yearBox">----</div>
         </div>
-        <div class="performance-block">
-            <div class="stars" id="starRating" aria-label="Daily performance rating" role="radiogroup">
-                <button class="star" data-value="1" aria-label="1 star" aria-checked="false">★</button>
-                <button class="star" data-value="2" aria-label="2 stars" aria-checked="false">★</button>
-                <button class="star" data-value="3" aria-label="3 stars" aria-checked="false">★</button>
-                <button class="star" data-value="4" aria-label="4 stars" aria-checked="false">★</button>
-                <button class="star" data-value="5" aria-label="5 stars" aria-checked="false">★</button>
-            </div>
-        </div>
     </header>
 
-        <!-- Daily Target Summary Section -->
-        <section class="targets-section" aria-labelledby="targetsHeading">
-            <h2 id="targetsHeading" class="sr-only">Daily Target Summary</h2>
-            <table class="target-table" role="grid">
-                <thead>
-                    <tr>
-                        <th scope="col">১. আমার টার্গেট (ঘন্টায়)</th>
-                        <th scope="col">২. টার্গেট পূরণ (ঘন্টায়)</th>
-                        <th scope="col">৩. টার্গেট ঘাটতি / বেশি</th>
-                        <th scope="col">৪. টার্গেট রেটিং</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td data-label="আমার টার্গেট">
-                            <input type="number" id="targetHours" min="0" step="0.25" placeholder="0" aria-label="Target hours">
-                        </td>
-                        <td data-label="টার্গেট পূরণ">
-                            <input type="number" id="fulfilledHours" min="0" step="0.25" placeholder="0" aria-label="Fulfilled hours">
-                        </td>
-                        <td data-label="টার্গেট ঘাটতি/বেশি">
-                            <span id="targetDifference" class="target-diff" aria-live="polite">—</span>
-                        </td>
-                        <td data-label="টার্গেট রেটিং">
-                            <div class="target-rating" id="targetRating" aria-label="Target rating" role="radiogroup">
-                                <button class="target-star" data-value="1" aria-label="1" aria-checked="false" type="button">★</button>
-                                <button class="target-star" data-value="2" aria-label="2" aria-checked="false" type="button">★</button>
-                                <button class="target-star" data-value="3" aria-label="3" aria-checked="false" type="button">★</button>
-                                <button class="target-star" data-value="4" aria-label="4" aria-checked="false" type="button">★</button>
-                                <button class="target-star" data-value="5" aria-label="5" aria-checked="false" type="button">★</button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+    <!-- Daily Target Summary Section -->
+    <section class="targets-section" aria-labelledby="targetsHeading">
+        <h2 id="targetsHeading" class="sr-only">Daily Target Summary</h2>
+        <table class="target-table" role="grid">
+            <thead>
+                <tr>
+                    <th scope="col">১. আমার টার্গেট (ঘন্টায়)</th>
+                    <th scope="col">২. টার্গেট পূরণ (ঘন্টায়)</th>
+                    <th scope="col">৩. টার্গেট ঘাটতি / বেশি</th>
+                    <th scope="col">৪. টার্গেট রেটিং</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="আমার টার্গেট">
+                        <input type="number" id="targetHours" min="0" step="0.25" placeholder="0"
+                            aria-label="Target hours">
+                    </td>
+                    <td data-label="টার্গেট পূরণ">
+                        <input type="number" id="fulfilledHours" min="0" step="0.25" placeholder="0"
+                            aria-label="Fulfilled hours">
+                    </td>
+                    <td data-label="টার্গেট ঘাটতি/বেশি">
+                        <span id="targetDifference" class="target-diff" aria-live="polite">—</span>
+                    </td>
+                    <td data-label="টার্গেট রেটিং">
+                        <div class="target-rating" id="targetRating" aria-label="Target rating" role="radiogroup">
+                            <button class="target-star" data-value="1" aria-label="1" aria-checked="false"
+                                type="button">★</button>
+                            <button class="target-star" data-value="2" aria-label="2" aria-checked="false"
+                                type="button">★</button>
+                            <button class="target-star" data-value="3" aria-label="3" aria-checked="false"
+                                type="button">★</button>
+                            <button class="target-star" data-value="4" aria-label="4" aria-checked="false"
+                                type="button">★</button>
+                            <button class="target-star" data-value="5" aria-label="5" aria-checked="false"
+                                type="button">★</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Previous Days Missed / Important Notes (Table Styled) -->
+    <section class="previous-section" aria-labelledby="previousHeading">
+        <table class="notes-table" role="grid">
+            <thead>
+                <tr>
+                    <th id="previousHeading" scope="col">বিগত দিনে যা পড়া হয়নি/ কোন গুরুত্বপূর্ন নোট</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <textarea id="previousNotes" rows="4"
+                            placeholder="সংক্ষিপ্ত নোট বা টপিক লিস্ট লিখুন..."></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
     <main class="layout">
         <section class="tasks-section" aria-labelledby="tasksHeading">

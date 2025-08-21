@@ -33,6 +33,7 @@
     whyStudy: qs('#whyStudy'),
     difficultSubject: qs('#difficultSubject'),
     pendingTomorrow: qs('#pendingTomorrow'),
+    previousNotes: qs('#previousNotes'),
   };
 
   // Vocabulary
@@ -208,23 +209,12 @@
   if(targetHoursInput && fulfilledHoursInput){
     targetHoursInput.value = state.targetSummary.target || '';
     fulfilledHoursInput.value = state.targetSummary.fulfilled || '';
-    updateTargetDifference();
-    updateTargetStars();
-
-    targetHoursInput.addEventListener('input', () => { updateTargetDifference(); persistTargetSummary(); });
-    fulfilledHoursInput.addEventListener('input', () => { updateTargetDifference(); persistTargetSummary(); });
-    if(targetRatingEl){
-      targetRatingEl.addEventListener('click', e => {
-        if(e.target.classList.contains('target-star')){
-          state.targetSummary.rating = Number(e.target.dataset.value);
-          updateTargetStars();
-          saveState();
-        }
-      });
-    }
+    updateTargetMetrics();
+    targetHoursInput.addEventListener('input', () => { updateTargetMetrics(); persistTargetSummary(); });
+    fulfilledHoursInput.addEventListener('input', () => { updateTargetMetrics(); persistTargetSummary(); });
   }
 
-  function updateTargetDifference(){
+  function updateTargetMetrics(){
     const t = parseFloat(targetHoursInput.value)||0;
     const f = parseFloat(fulfilledHoursInput.value)||0;
     const diff = f - t;
@@ -240,11 +230,27 @@
       targetDiffEl.textContent = Math.abs(diff).toFixed(2) + ' ঘাটতি';
       targetDiffEl.classList.add('negative');
     }
+    // Automatic rating
+    state.targetSummary.rating = computeTargetRating(t,f);
+    updateTargetStars();
+    saveState();
+  }
+
+  function computeTargetRating(t,f){
+    if(!t) return 0;
+    const r = f / t;
+    if(r >= 1.2) return 5;
+    if(r >= 1.0) return 4;
+    if(r >= 0.85) return 3;
+    if(r >= 0.70) return 2;
+    if(r > 0) return 1;
+    return 0;
   }
 
   function persistTargetSummary(){
     state.targetSummary.target = targetHoursInput.value;
     state.targetSummary.fulfilled = fulfilledHoursInput.value;
+    // rating recalculated automatically
     saveState();
   }
 
