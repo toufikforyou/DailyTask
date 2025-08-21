@@ -23,6 +23,11 @@
   const template = qs('#taskItemTemplate');
   const totalHours = qs('#totalHours');
   const starRating = qs('#starRating');
+  // Target summary elements
+  const targetHoursInput = qs('#targetHours');
+  const fulfilledHoursInput = qs('#fulfilledHours');
+  const targetDiffEl = qs('#targetDifference');
+  const targetRatingEl = qs('#targetRating');
   const noteFields = {
     priorityTask: qs('#priorityTask'),
     whyStudy: qs('#whyStudy'),
@@ -166,10 +171,12 @@
   function loadState(){
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if(!raw) return { tasks: sampleTasks(), stars:0, totalHours:'', notes:{}, vocab:[] };
-      return JSON.parse(raw);
+      if(!raw) return { tasks: sampleTasks(), stars:0, totalHours:'', notes:{}, vocab:[], targetSummary:{ target:'', fulfilled:'', rating:0 } };
+      const parsed = JSON.parse(raw);
+      if(!parsed.targetSummary) parsed.targetSummary = { target:'', fulfilled:'', rating:0 };
+      return parsed;
     } catch(e){
-      return { tasks: sampleTasks(), stars:0, totalHours:'', notes:{}, vocab:[] };
+      return { tasks: sampleTasks(), stars:0, totalHours:'', notes:{}, vocab:[], targetSummary:{ target:'', fulfilled:'', rating:0 } };
     }
   }
   function saveState(){
@@ -195,5 +202,58 @@
     if(words.length) renderVocabulary(words); else renderVocabulary(pickWords());
   } else {
     renderVocabulary(pickWords());
+  }
+
+  // --- Target summary init & logic ---
+  if(targetHoursInput && fulfilledHoursInput){
+    targetHoursInput.value = state.targetSummary.target || '';
+    fulfilledHoursInput.value = state.targetSummary.fulfilled || '';
+    updateTargetDifference();
+    updateTargetStars();
+
+    targetHoursInput.addEventListener('input', () => { updateTargetDifference(); persistTargetSummary(); });
+    fulfilledHoursInput.addEventListener('input', () => { updateTargetDifference(); persistTargetSummary(); });
+    if(targetRatingEl){
+      targetRatingEl.addEventListener('click', e => {
+        if(e.target.classList.contains('target-star')){
+          state.targetSummary.rating = Number(e.target.dataset.value);
+          updateTargetStars();
+          saveState();
+        }
+      });
+    }
+  }
+
+  function updateTargetDifference(){
+    const t = parseFloat(targetHoursInput.value)||0;
+    const f = parseFloat(fulfilledHoursInput.value)||0;
+    const diff = f - t;
+    targetDiffEl.classList.remove('positive','negative');
+    if(!t && !f){
+      targetDiffEl.textContent = '—';
+    } else if(diff === 0){
+      targetDiffEl.textContent = '0';
+    } else if(diff > 0){
+      targetDiffEl.textContent = diff.toFixed(2) + ' বেশি';
+      targetDiffEl.classList.add('positive');
+    } else {
+      targetDiffEl.textContent = Math.abs(diff).toFixed(2) + ' ঘাটতি';
+      targetDiffEl.classList.add('negative');
+    }
+  }
+
+  function persistTargetSummary(){
+    state.targetSummary.target = targetHoursInput.value;
+    state.targetSummary.fulfilled = fulfilledHoursInput.value;
+    saveState();
+  }
+
+  function updateTargetStars(){
+    if(!targetRatingEl) return;
+    Array.from(targetRatingEl.querySelectorAll('.target-star')).forEach(st => {
+      const active = Number(st.dataset.value) <= (state.targetSummary.rating||0);
+      st.classList.toggle('active', active);
+      st.setAttribute('aria-checked', active);
+    });
   }
 })();
