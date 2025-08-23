@@ -112,14 +112,32 @@ body {
 .targets-section {
   max-width: 1400px;
   margin: 0 auto 0;
-  padding: 0.6rem clamp(1rem, 4vw, 3rem) 0.4rem;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 .target-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
+}
+.greeting-sub {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0d56dd;
+  margin-left: 0.5rem;
+}
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.header-right .date-block {
+  margin: 0;
+}
+.header-right .day-switch {
+  margin: 0;
 }
 .target-table th,
 .target-table td {

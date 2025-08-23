@@ -77,16 +77,19 @@
     <header class="app-header">
         <div class="header-inner">
             <div class="title-block">
-                <h1>Study Planner <span id="greetingName" class="greeting-sub"></span></h1>
+                <h1>Study Planner</h1>
+                <div id="greetingName" class="greeting-sub"></div>
+            </div>
+            <div class="header-right">
+                <div class="date-block" id="dateBlock" aria-label="Current date">
+                    <div class="date-box" id="dayBox">--</div>
+                    <div class="date-box" id="monthBox">---</div>
+                    <div class="date-box" id="yearBox">----</div>
+                </div>
                 <div class="day-switch" role="group" aria-label="Select planning day">
                     <button type="button" class="day-btn" data-day="today" id="switchToday">Today</button>
                     <button type="button" class="day-btn" data-day="tomorrow" id="switchTomorrow">Tomorrow</button>
                 </div>
-            </div>
-            <div class="date-block" id="dateBlock" aria-label="Current date">
-                <div class="date-box" id="dayBox">--</div>
-                <div class="date-box" id="monthBox">---</div>
-                <div class="date-box" id="yearBox">----</div>
             </div>
         </div>
     </header>
