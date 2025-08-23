@@ -55,6 +55,7 @@
   const switchTomorrow = qs('#switchTomorrow');
   const navPrevDay = qs('#navPrevDay');
   const navNextDay = qs('#navNextDay');
+  const dayNavError = qs('#dayNavError');
 
   // Read onboarding data and greet
   let onboardData = null;
@@ -169,7 +170,71 @@
   if (navPrevDay) navPrevDay.addEventListener('click', () => {
     goToOffset(currentOffset - 1);
   });
+  // Validation: prevent navigating next if planner is completely blank
+  function isEmptyString(s){ return !s || String(s).trim().length === 0; }
+  function isPlannerBlank(){
+    try {
+      // Tasks: any meaningful content?
+      const hasTasks = (state.tasks || []).some(t => {
+        const dur = (t.duration || '').trim();
+        const title = (t.title || '').trim();
+        const nonDefaultDur = dur && dur.toLowerCase() !== '20 min';
+        return !!title || nonDefaultDur || !!t.done;
+      });
+
+      // Notes textareas
+      const textNoteKeys = ['priorityTask','whyStudy','difficultSubject','pendingTomorrow','previousNotes'];
+      const hasNotesText = textNoteKeys.some(k => !isEmptyString(state.notes?.[k]));
+
+      // Dynamic lists
+      const hasListItems = Object.keys(state.notes || {}).some(k => k.endsWith(':list') && Array.isArray(state.notes[k]) && state.notes[k].length > 0);
+
+      // Prayers
+      const hasPrayers = Object.values(state.notes?.prayers || {}).some(Boolean);
+
+      // Wasted time
+      const hasWastedTime = !isEmptyString(state.notes?.wastedTime);
+
+      // Target summary
+      const t = parseFloat(state.targetSummary?.target || '');
+      const f = parseFloat(state.targetSummary?.fulfilled || '');
+      const hasTargets = ((isFinite(t) && t > 0) || (isFinite(f) && f > 0));
+
+      // Other signals
+      const hasTotalHours = !isEmptyString(state.totalHours);
+      const hasStars = (state.stars || 0) > 0;
+
+      const any = hasTasks || hasNotesText || hasListItems || hasPrayers || hasWastedTime || hasTargets || hasTotalHours || hasStars;
+      return !any;
+    } catch { return false; }
+  }
+  function showDayNavError(msg){
+    if(dayNavError){
+      dayNavError.textContent = msg;
+      dayNavError.hidden = false;
+    }
+    if(navNextDay){
+      navNextDay.classList.remove('attention');
+      // reflow to retrigger animation
+      void navNextDay.offsetWidth;
+      navNextDay.classList.add('attention');
+      setTimeout(() => navNextDay.classList.remove('attention'), 900);
+    }
+    // Auto-hide after 5 seconds
+    clearDayNavError._t && clearTimeout(clearDayNavError._t);
+    clearDayNavError._t = setTimeout(() => {
+      clearDayNavError();
+    }, 5000);
+  }
+  function clearDayNavError(){
+    if(dayNavError){ dayNavError.hidden = true; dayNavError.textContent = ''; }
+  }
   if (navNextDay) navNextDay.addEventListener('click', () => {
+    if (isPlannerBlank()) {
+      showDayNavError('আগে এই দিনের জন্য অন্তত একটি জিনিস যোগ করুন — টাস্ক, নোট, ঘণ্টা, টার্গেট বা স্টার রেটিং।');
+      return;
+    }
+    clearDayNavError();
     goToOffset(currentOffset + 1);
   });
 
