@@ -151,6 +151,9 @@
     const btnS1 = onboarding.querySelector('#onbToStep2');
     const btnS2 = onboarding.querySelector('#onbToStep3');
     const btnS3 = onboarding.querySelector('#onbToStep4');
+  const back12 = onboarding.querySelector('#onbBackToStep1');
+  const back23 = onboarding.querySelector('#onbBackToStep2');
+  const back34 = onboarding.querySelector('#onbBackToStep3');
     const msg = onboarding.querySelector('#onbMessage');
 
     const stateOnb = { name: '', day: '', plan: '', goal: '' };
@@ -174,6 +177,11 @@
     btnS2.addEventListener('click', () => {
       step2.hidden = true; step3.hidden = false;
     });
+    if (back12) back12.addEventListener('click', () => {
+      step2.hidden = true; step1.hidden = false;
+      // keep entered name
+      nameInput.focus();
+    });
 
     step3.addEventListener('click', (e) => {
       const b = e.target.closest('.btn.choice');
@@ -186,8 +194,16 @@
     btnS3.addEventListener('click', () => {
       step3.hidden = true; step4.hidden = false;
     });
+    if (back23) back23.addEventListener('click', () => {
+      step3.hidden = true; step2.hidden = false;
+      // restore selected day button active state
+      if (stateOnb.day) {
+        step2.querySelectorAll('.btn.choice').forEach(x=>x.classList.toggle('active', x.dataset.day === stateOnb.day));
+        btnS2.disabled = false;
+      }
+    });
 
-    step4.addEventListener('click', (e) => {
+  step4.addEventListener('click', (e) => {
       const b = e.target.closest('.btn.choice');
       if(!b) return;
       step4.querySelectorAll('.btn.choice').forEach(x=>x.classList.remove('active'));
@@ -220,6 +236,14 @@
       setTimeout(() => {
         onboarding.hidden = true;
       }, 1300);
+    });
+    if (back34) back34.addEventListener('click', () => {
+      step4.hidden = true; step3.hidden = false;
+      // restore selected plan active state
+      if (stateOnb.plan) {
+        step3.querySelectorAll('.btn.choice').forEach(x=>x.classList.toggle('active', x.dataset.plan === stateOnb.plan));
+        btnS3.disabled = false;
+      }
     });
   }
 

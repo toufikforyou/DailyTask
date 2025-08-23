@@ -5,8 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Study Planner</title>
-    <meta name="description"
-        content="MediTrack – A clean medical student daily study planner and vocabulary tracker." />
+    <meta name="description" content="Study Planner – A clean student daily study planner" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -40,6 +39,7 @@
                         <button class="btn choice" data-day="tomorrow" id="onbDayTomorrow">Tomorrow</button>
                     </div>
                     <div class="onboard-actions">
+                        <button id="onbBackToStep1" class="btn">Back</button>
                         <button id="onbToStep3" class="btn primary" disabled>Next</button>
                     </div>
                 </div>
@@ -52,6 +52,7 @@
                         <button class="btn choice" data-plan="Admission" id="onbPlanAdmission">Admission</button>
                     </div>
                     <div class="onboard-actions">
+                        <button id="onbBackToStep2" class="btn">Back</button>
                         <button id="onbToStep4" class="btn primary" disabled>Next</button>
                     </div>
                 </div>
@@ -63,6 +64,9 @@
                         <button class="btn choice" data-goal="University" id="onbGoalUniversity">University</button>
                         <button class="btn choice" data-goal="Engineering" id="onbGoalEngineering">Engineering</button>
                         <button class="btn choice" data-goal="Medical" id="onbGoalMedical">Medical</button>
+                    </div>
+                    <div class="onboard-actions">
+                        <button id="onbBackToStep3" class="btn">Back</button>
                     </div>
                 </div>
 
