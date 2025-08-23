@@ -108,18 +108,20 @@ body {
   text-align: center;
   padding: 1rem 0.5rem;
 }
-/* Targets Section */
+/* Targets Section (styled like Previous Notes) */
 .targets-section {
   max-width: 1400px;
-  margin: 0 auto 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  margin: 0.25rem auto 0;
+  padding: 0.6rem clamp(1rem, 4vw, 3rem) 0.6rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
 }
 .target-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
+  overflow: hidden;
 }
 .greeting-sub {
   font-size: 1rem;
@@ -152,6 +154,7 @@ body {
   letter-spacing: 0.5px;
   font-size: 0.7rem;
   text-transform: uppercase;
+  border: none;
 }
 .target-table td {
   background: #fff;
@@ -334,6 +337,10 @@ body {
   background-clip: text;
   position: relative;
 }
+.title-block {
+  display: flex;
+  flex-direction: column;
+}
 .greeting-sub {
   font-size: 1rem;
   font-weight: 800;
@@ -387,6 +394,22 @@ body {
   text-align: center;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+/* Header responsiveness */
+@media (max-width: 900px) {
+  .app-header h1 {
+    font-size: 1.9rem;
+  }
+  .greeting-sub {
+    font-size: 0.95rem;
+    margin-left: 0;
+  }
+  .date-box {
+    min-width: 64px;
+    font-size: 0.95rem;
+    padding: 0.5rem 0.7rem;
+  }
 }
 
 .performance-block {
@@ -861,10 +884,40 @@ body {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+  .header-right {
+    align-items: center;
+  }
+  .date-block {
+    justify-content: center;
+  }
+  .day-switch {
+    justify-content: center;
+  }
+  .app-header h1 {
+    font-size: 1.7rem;
+  }
+  .greeting-sub {
+    margin-top: 0.3rem;
+  }
   .layout {
     padding: 1rem 1rem 2.5rem;
   }
   .simple-footer {
     padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .date-block {
+    gap: 0.4rem;
+  }
+  .date-box {
+    min-width: 56px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.9rem;
+  }
+  .day-btn {
+    padding: 0.22rem 0.5rem;
+    font-size: 0.75rem;
   }
 }

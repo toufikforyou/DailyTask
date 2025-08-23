@@ -547,10 +547,19 @@
 
   function updateTargetMetrics() {
     if (!targetHoursInput || !fulfilledHoursInput || !targetDiffEl) return;
-    const tRaw = targetHoursInput.value.trim();
-    const fRaw = fulfilledHoursInput.value.trim();
-    const tVal = parseNum(tRaw);
-    const fVal = parseNum(fRaw);
+    // Clamp inputs between 0 and 24
+    let tRaw = targetHoursInput.value.trim();
+    let fRaw = fulfilledHoursInput.value.trim();
+    let tVal = parseNum(tRaw);
+    let fVal = parseNum(fRaw);
+    if (!isNaN(tVal)) {
+      tVal = Math.max(0, Math.min(24, tVal));
+      if (tVal != parseNum(tRaw)) targetHoursInput.value = String(tVal);
+    }
+    if (!isNaN(fVal)) {
+      fVal = Math.max(0, Math.min(24, fVal));
+      if (fVal != parseNum(fRaw)) fulfilledHoursInput.value = String(fVal);
+    }
     const t = isNaN(tVal) ? 0 : tVal;
     const f = isNaN(fVal) ? 0 : fVal;
     const emptyInputs = tRaw === "" && fRaw === "";
