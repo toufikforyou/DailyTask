@@ -3,8 +3,23 @@
 (function () {
   const qs = (sel) => document.querySelector(sel);
   const qsa = (sel) => Array.from(document.querySelectorAll(sel));
-  const STORAGE_KEY = "meditrack.daily.v1";
-  const state = loadState();
+  const BASE_KEY = "meditrack.daily.v1";
+  const DAY_KEY = 'meditrack.day.v1';
+  const ONBOARD_KEY = "meditrack.onboard.v1";
+  function storageKeyFor(day){ return `${BASE_KEY}.${day}`; }
+  function getSelectedDay(){
+    let daySel = 'today';
+    try { daySel = JSON.parse(localStorage.getItem(DAY_KEY) || '"today"'); } catch { daySel = 'today'; }
+    if(!localStorage.getItem(DAY_KEY)){
+      try {
+        const onb = JSON.parse(localStorage.getItem(ONBOARD_KEY) || 'null');
+        if(onb && (onb.day === 'today' || onb.day === 'tomorrow')) daySel = onb.day;
+      } catch { /* ignore */ }
+    }
+    return (daySel === 'tomorrow') ? 'tomorrow' : 'today';
+  }
+  let currentDay = getSelectedDay();
+  let state = loadState(currentDay);
 
   // Date setup
   const now = new Date();
@@ -19,9 +34,103 @@
   monthBox.textContent = monthNames[now.getMonth()];
   yearBox.textContent = now.getFullYear();
   qs("#yearCopy").textContent = now.getFullYear();
+  const greetingEl = qs('#greetingName');
+  const switchToday = qs('#switchToday');
+  const switchTomorrow = qs('#switchTomorrow');
+
+  // Read onboarding data and greet
+  let onboardData = null;
+  try { onboardData = JSON.parse(localStorage.getItem(ONBOARD_KEY) || 'null'); } catch {}
+  if (greetingEl && onboardData) {
+    const name = onboardData.name || '';
+    const goal = onboardData.goal || '';
+    let msg = '';
+    if (goal === 'University') msg = `— Hey Future Publician ${name}!`;
+    else if (goal === 'Engineering') msg = `— Hey Future Engineer ${name}!`;
+    else if (goal === 'Medical') msg = `— Hey Future Doctor ${name}!`;
+    else if (name) msg = `— Welcome ${name}!`;
+    greetingEl.textContent = msg;
+  }
+
+  // Day switching: affects date shown and persists
+  function setDateFor(day){
+    const base = new Date();
+    if(day === 'tomorrow') base.setDate(base.getDate() + 1);
+    dayBox.textContent = String(base.getDate()).padStart(2, '0');
+    monthBox.textContent = monthNames[base.getMonth()];
+    yearBox.textContent = base.getFullYear();
+  }
+  function setActiveDayBtn(day){
+    [switchToday, switchTomorrow].forEach(b=> b && b.classList.remove('active'));
+    if(day === 'tomorrow' && switchTomorrow) switchTomorrow.classList.add('active');
+    else if (switchToday) switchToday.classList.add('active');
+  }
+  // Initialize header day UI from currentDay
+  setDateFor(currentDay);
+  setActiveDayBtn(currentDay);
+  function applyStateToUI(){
+    // Tasks
+    if (taskList) {
+      taskList.innerHTML = '';
+      (state.tasks || []).forEach((t) => taskList.appendChild(createTask(t)));
+    }
+    // Hours
+    if (totalHours) totalHours.value = state.totalHours || '';
+    // Notes (textareas)
+    Object.entries(noteFields).forEach(([k, el]) => {
+      if (el) el.value = state.notes[k] || '';
+    });
+    // Sidebar lists
+    refreshSidebarLists();
+    // Prayers
+    loadPrayers();
+    // Wasted time
+    if (wastedTimeInput) wastedTimeInput.value = state.notes.wastedTime || '';
+    // Stars
+    updateStars();
+    // Target summary inputs + metrics
+    if (targetHoursInput && fulfilledHoursInput) {
+      targetHoursInput.value = state.targetSummary?.target || '';
+      fulfilledHoursInput.value = state.targetSummary?.fulfilled || '';
+      updateTargetMetrics();
+    }
+  }
+  function refreshSidebarLists(){
+    qsa('.sidebar .note-box').forEach(box => {
+      const key = box.getAttribute('data-box');
+      const list = box.querySelector('.note-list');
+      if(!list) return;
+      list.innerHTML = '';
+      const arr = (state.notes[key+':list'] || []);
+      arr.forEach((text, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${text}</span>
+          <button type="button" class="remove-item" data-index="${index}">×</button>
+        `;
+        list.appendChild(li);
+      });
+    });
+  }
+  if (switchToday) switchToday.addEventListener('click', () => {
+    // Persist current, switch day, load and render
+    saveState();
+    currentDay = 'today';
+    localStorage.setItem(DAY_KEY, JSON.stringify(currentDay));
+    setDateFor(currentDay); setActiveDayBtn(currentDay);
+    state = loadState(currentDay);
+    applyStateToUI();
+  });
+  if (switchTomorrow) switchTomorrow.addEventListener('click', () => {
+    saveState();
+    currentDay = 'tomorrow';
+    localStorage.setItem(DAY_KEY, JSON.stringify(currentDay));
+    setDateFor(currentDay); setActiveDayBtn(currentDay);
+    state = loadState(currentDay);
+    applyStateToUI();
+  });
 
   // Onboarding logic
-  const ONBOARD_KEY = "meditrack.onboard.v1";
   const onboarding = qs('#onboarding');
   function showOnboardingIfNeeded(){
     try{
@@ -95,7 +204,19 @@
       msg.textContent = greeting;
 
       // Persist and redirect to dashboard (hide overlay)
-      localStorage.setItem(ONBOARD_KEY, JSON.stringify({ ...stateOnb, ts: Date.now() }));
+  localStorage.setItem(ONBOARD_KEY, JSON.stringify({ ...stateOnb, ts: Date.now() }));
+  // Reflect greeting and selected day immediately in header and date boxes
+      if (greetingEl) {
+        greetingEl.textContent = `— ${greeting}`;
+      }
+      const chosenDay = stateOnb.day === 'tomorrow' ? 'tomorrow' : 'today';
+      setDateFor(chosenDay);
+      setActiveDayBtn(chosenDay);
+      localStorage.setItem('meditrack.day.v1', JSON.stringify(chosenDay));
+  // Load corresponding day state
+  currentDay = chosenDay;
+  state = loadState(currentDay);
+  applyStateToUI();
       setTimeout(() => {
         onboarding.hidden = true;
       }, 1300);
@@ -275,7 +396,7 @@
       if(!plusBtn || !input || !list) return;
       
       // Render existing items with remove buttons
-      const renderList = () => {
+  const renderList = () => {
         list.innerHTML = '';
         const arr = (state.notes[key+':list'] || []);
         arr.forEach((text, index) => {
@@ -305,7 +426,7 @@
       };
       
       // Plus button click
-      plusBtn.addEventListener('click', addItem);
+  plusBtn.addEventListener('click', addItem);
       
       // Enter key in input
       input.addEventListener('keydown', (e) => {
@@ -315,7 +436,7 @@
       });
       
       // Remove item clicks
-      list.addEventListener('click', (e) => {
+  list.addEventListener('click', (e) => {
         if(e.target.classList.contains('remove-item')) {
           const index = parseInt(e.target.dataset.index);
           const current = (state.notes[key+':list'] || []);
@@ -361,9 +482,9 @@
   }
 
   // Persistence helpers
-  function loadState() {
+  function loadState(dayKey) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(storageKeyFor(dayKey || currentDay));
       if (!raw)
         return {
           tasks: [],
@@ -387,20 +508,11 @@
     }
   }
   function saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(storageKeyFor(currentDay), JSON.stringify(state));
   }
 
-  // Init render
-  state.tasks.forEach((t) => taskList.appendChild(createTask(t)));
-  if (totalHours) {
-    totalHours.value = state.totalHours || "";
-  }
-  Object.entries(noteFields).forEach(([k, el]) => {
-    if (el) {
-      el.value = state.notes[k] || "";
-    }
-  });
-  updateStars();
+  // Initial UI render from current day's state
+  applyStateToUI();
 
   // Target summary logic
   function bindTargetInputs() {

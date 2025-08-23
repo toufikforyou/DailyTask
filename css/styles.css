@@ -316,6 +316,34 @@ body {
   background-clip: text;
   position: relative;
 }
+.greeting-sub {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0d56dd;
+  -webkit-text-fill-color: initial;
+  background: none;
+  margin-left: 0.5rem;
+}
+.day-switch {
+  margin-top: 0.4rem;
+  display: inline-flex;
+  gap: 0.4rem;
+}
+.day-btn {
+  padding: 0.25rem 0.6rem;
+  border: 2px solid var(--pink);
+  background: #fff;
+  color: #0d56dd;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.day-btn.active {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+}
 .tagline {
   display: block;
   font-size: 0.85rem;
