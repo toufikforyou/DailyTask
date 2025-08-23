@@ -841,6 +841,39 @@ body {
   background: rgba(255, 79, 154, 0.03);
 }
 
+/* Day nav */
+.day-nav {
+  max-width: 1400px;
+  margin: 0.5rem auto 0;
+  padding: 0 clamp(1rem, 4vw, 3rem);
+}
+.day-nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.nav-day-btn {
+  background: #fff;
+  color: var(--pink);
+  border: 2px solid var(--pink);
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.nav-day-btn.primary {
+  background: var(--pink);
+  color: #fff;
+}
+.nav-day-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.nav-prev-hidden #navPrevDay {
+  display: none;
+}
+
 .app-meta {
   font-size: 0.65rem;
   text-transform: uppercase;

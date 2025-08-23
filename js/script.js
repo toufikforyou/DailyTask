@@ -3,23 +3,39 @@
 (function () {
   const qs = (sel) => document.querySelector(sel);
   const qsa = (sel) => Array.from(document.querySelectorAll(sel));
-  const BASE_KEY = "meditrack.daily.v1";
-  const DAY_KEY = 'meditrack.day.v1';
+  const BASE_KEY = "meditrack.daily.v1"; // will be suffixed by YYYY-MM-DD
+  const DAY_KEY = 'meditrack.day.v1'; // legacy (today/tomorrow)
+  const DATE_OFFSET_KEY = 'meditrack.offset.v1'; // 0 = today, 1 = tomorrow, 2 = +2 days, ...
   const ONBOARD_KEY = "meditrack.onboard.v1";
-  function storageKeyFor(day){ return `${BASE_KEY}.${day}`; }
-  function getSelectedDay(){
-    let daySel = 'today';
-    try { daySel = JSON.parse(localStorage.getItem(DAY_KEY) || '"today"'); } catch { daySel = 'today'; }
-    if(!localStorage.getItem(DAY_KEY)){
-      try {
-        const onb = JSON.parse(localStorage.getItem(ONBOARD_KEY) || 'null');
-        if(onb && (onb.day === 'today' || onb.day === 'tomorrow')) daySel = onb.day;
-      } catch { /* ignore */ }
-    }
-    return (daySel === 'tomorrow') ? 'tomorrow' : 'today';
+  function todayAtMidnight(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+  function formatDateKey(d){
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const da=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${da}`;
   }
-  let currentDay = getSelectedDay();
-  let state = loadState(currentDay);
+  function storageKeyForDate(date){ return `${BASE_KEY}.${formatDateKey(date)}`; }
+  function getInitialOffset(){
+    // Prefer explicit offset
+    let off = 0;
+    try { off = JSON.parse(localStorage.getItem(DATE_OFFSET_KEY) || '0'); } catch { off = 0; }
+    if (typeof off === 'number' && off >= 0) return off;
+    // Fallback to legacy day key
+    try {
+      const daySel = JSON.parse(localStorage.getItem(DAY_KEY) || '"today"');
+      if (daySel === 'tomorrow') return 1;
+    } catch {}
+    // Fallback to onboarding choice
+    try {
+      const onb = JSON.parse(localStorage.getItem(ONBOARD_KEY) || 'null');
+      if (onb && onb.day === 'tomorrow') return 1;
+    } catch {}
+    return 0;
+  }
+  let currentOffset = getInitialOffset();
+  function getDateFromOffset(off){ const d=todayAtMidnight(); d.setDate(d.getDate()+off); return d; }
+  let currentDate = getDateFromOffset(currentOffset);
+  let state = loadState(currentDate);
 
   // Date setup
   const now = new Date();
@@ -37,6 +53,8 @@
   const greetingEl = qs('#greetingName');
   const switchToday = qs('#switchToday');
   const switchTomorrow = qs('#switchTomorrow');
+  const navPrevDay = qs('#navPrevDay');
+  const navNextDay = qs('#navNextDay');
 
   // Read onboarding data and greet
   let onboardData = null;
@@ -53,21 +71,23 @@
   }
 
   // Day switching: affects date shown and persists
-  function setDateFor(day){
-    const base = new Date();
-    if(day === 'tomorrow') base.setDate(base.getDate() + 1);
-    dayBox.textContent = String(base.getDate()).padStart(2, '0');
-    monthBox.textContent = monthNames[base.getMonth()];
-    yearBox.textContent = base.getFullYear();
+  function setDateBoxes(date){
+    dayBox.textContent = String(date.getDate()).padStart(2, '0');
+    monthBox.textContent = monthNames[date.getMonth()];
+    yearBox.textContent = date.getFullYear();
   }
-  function setActiveDayBtn(day){
+  function setActiveDayBtnByOffset(off){
     [switchToday, switchTomorrow].forEach(b=> b && b.classList.remove('active'));
-    if(day === 'tomorrow' && switchTomorrow) switchTomorrow.classList.add('active');
-    else if (switchToday) switchToday.classList.add('active');
+    if (off === 0 && switchToday) switchToday.classList.add('active');
+    else if (off === 1 && switchTomorrow) switchTomorrow.classList.add('active');
+  // Hide prev button when today
+  const body = document.body;
+    if (body) body.classList.toggle('nav-prev-hidden', off === 0);
+    if (navPrevDay) navPrevDay.disabled = (off === 0);
   }
-  // Initialize header day UI from currentDay
-  setDateFor(currentDay);
-  setActiveDayBtn(currentDay);
+  // Initialize header day UI from current date/offset
+  setDateBoxes(currentDate);
+  setActiveDayBtnByOffset(currentOffset);
   function applyStateToUI(){
     // Tasks
     if (taskList) {
@@ -113,21 +133,44 @@
     });
   }
   if (switchToday) switchToday.addEventListener('click', () => {
-    // Persist current, switch day, load and render
     saveState();
-    currentDay = 'today';
-    localStorage.setItem(DAY_KEY, JSON.stringify(currentDay));
-    setDateFor(currentDay); setActiveDayBtn(currentDay);
-    state = loadState(currentDay);
+    currentOffset = 0;
+    currentDate = getDateFromOffset(currentOffset);
+    localStorage.setItem(DATE_OFFSET_KEY, JSON.stringify(currentOffset));
+    localStorage.setItem(DAY_KEY, JSON.stringify('today'));
+    setDateBoxes(currentDate); setActiveDayBtnByOffset(currentOffset);
+    state = loadState(currentDate);
     applyStateToUI();
   });
   if (switchTomorrow) switchTomorrow.addEventListener('click', () => {
     saveState();
-    currentDay = 'tomorrow';
-    localStorage.setItem(DAY_KEY, JSON.stringify(currentDay));
-    setDateFor(currentDay); setActiveDayBtn(currentDay);
-    state = loadState(currentDay);
+    currentOffset = 1;
+    currentDate = getDateFromOffset(currentOffset);
+    localStorage.setItem(DATE_OFFSET_KEY, JSON.stringify(currentOffset));
+    localStorage.setItem(DAY_KEY, JSON.stringify('tomorrow'));
+    setDateBoxes(currentDate); setActiveDayBtnByOffset(currentOffset);
+    state = loadState(currentDate);
     applyStateToUI();
+  });
+  // Prev/Next navigation buttons
+  function goToOffset(off){
+    if (off < 0) off = 0;
+    saveState();
+    currentOffset = off;
+    currentDate = getDateFromOffset(currentOffset);
+    localStorage.setItem(DATE_OFFSET_KEY, JSON.stringify(currentOffset));
+    // Update legacy day key for today/tomorrow only
+    if (currentOffset === 0) localStorage.setItem(DAY_KEY, JSON.stringify('today'));
+    else if (currentOffset === 1) localStorage.setItem(DAY_KEY, JSON.stringify('tomorrow'));
+    setDateBoxes(currentDate); setActiveDayBtnByOffset(currentOffset);
+    state = loadState(currentDate);
+    applyStateToUI();
+  }
+  if (navPrevDay) navPrevDay.addEventListener('click', () => {
+    goToOffset(currentOffset - 1);
+  });
+  if (navNextDay) navNextDay.addEventListener('click', () => {
+    goToOffset(currentOffset + 1);
   });
 
   // Onboarding logic
@@ -225,13 +268,15 @@
       if (greetingEl) {
         greetingEl.textContent = `— ${greeting}`;
       }
-      const chosenDay = stateOnb.day === 'tomorrow' ? 'tomorrow' : 'today';
-      setDateFor(chosenDay);
-      setActiveDayBtn(chosenDay);
-      localStorage.setItem('meditrack.day.v1', JSON.stringify(chosenDay));
+    const chosenOffset = stateOnb.day === 'tomorrow' ? 1 : 0;
+    currentOffset = chosenOffset;
+    currentDate = getDateFromOffset(currentOffset);
+    setDateBoxes(currentDate);
+    setActiveDayBtnByOffset(currentOffset);
+    localStorage.setItem(DATE_OFFSET_KEY, JSON.stringify(currentOffset));
+    localStorage.setItem(DAY_KEY, JSON.stringify(chosenOffset === 0 ? 'today' : 'tomorrow'));
   // Load corresponding day state
-  currentDay = chosenDay;
-  state = loadState(currentDay);
+  state = loadState(currentDate);
   applyStateToUI();
       setTimeout(() => {
         onboarding.hidden = true;
@@ -506,9 +551,26 @@
   }
 
   // Persistence helpers
-  function loadState(dayKey) {
+  function loadState(dateObj) {
     try {
-      const raw = localStorage.getItem(storageKeyFor(dayKey || currentDay));
+      const dateToUse = dateObj || currentDate;
+      let raw = localStorage.getItem(storageKeyForDate(dateToUse));
+      // Simple migration: if no date-based data but legacy today/tomorrow exist
+      if (!raw) {
+        const todayKey = `${BASE_KEY}.today`;
+        const tomorrowKey = `${BASE_KEY}.tomorrow`;
+        const todayStr = localStorage.getItem(todayKey);
+        const tomorrowStr = localStorage.getItem(tomorrowKey);
+        const todayKeyStr = formatDateKey(todayAtMidnight());
+        const tomorrowKeyStr = formatDateKey(getDateFromOffset(1));
+        const wantKeyStr = formatDateKey(dateToUse);
+        if (wantKeyStr === todayKeyStr && todayStr) raw = todayStr;
+        if (wantKeyStr === tomorrowKeyStr && tomorrowStr) raw = tomorrowStr;
+        if (raw) {
+          // persist under date-based key for future
+          localStorage.setItem(storageKeyForDate(dateToUse), raw);
+        }
+      }
       if (!raw)
         return {
           tasks: [],
@@ -532,7 +594,7 @@
     }
   }
   function saveState() {
-    localStorage.setItem(storageKeyFor(currentDay), JSON.stringify(state));
+    localStorage.setItem(storageKeyForDate(currentDate), JSON.stringify(state));
   }
 
   // Initial UI render from current day's state
