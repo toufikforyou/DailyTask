@@ -859,13 +859,29 @@ body {
 }
 .nav-day-btn {
   background: #fff;
-  color: #0d56dd; /* darker blue for better contrast on white */
+  color: #0d56dd;
   border: 2px solid var(--pink);
   padding: 0.55rem 0.9rem;
   border-radius: 999px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.25s;
+}
+.day-nav-error {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #8b1d13;
+  font-weight: 800;
+  background: #ffeceb; /* solid for strong contrast */
+  border: 2px solid #f1b0ab;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 2000; /* above sticky header */
+  text-align: center;
+  max-width: min(92vw, 520px);
 }
 .nav-day-btn.primary {
   background: var(--pink);
@@ -968,20 +984,7 @@ body {
   }
 }
 
-/* Day nav: validation toast (top-right) */
-.day-nav-error {
-  position: fixed;
-  top: 15%;
-  right: 15%;
-  color: #8b1d13;
-  font-weight: 800;
-  background: #ffeceb;
-  border: 2px solid #f1b0ab;
-  border-radius: 10px;
-  padding: 0.55rem 0.8rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 2000;
-}
+/* Day nav: attention animation */
 .nav-day-btn.attention {
   animation: jiggle 0.35s ease-in-out 0s 2;
 }
