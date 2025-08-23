@@ -20,6 +20,90 @@
   yearBox.textContent = now.getFullYear();
   qs("#yearCopy").textContent = now.getFullYear();
 
+  // Onboarding logic
+  const ONBOARD_KEY = "meditrack.onboard.v1";
+  const onboarding = qs('#onboarding');
+  function showOnboardingIfNeeded(){
+    try{
+      const done = JSON.parse(localStorage.getItem(ONBOARD_KEY) || 'null');
+      if(!done && onboarding){
+        onboarding.hidden = false;
+        setupOnboarding();
+      }
+    }catch{ /* ignore */ }
+  }
+  function setupOnboarding(){
+    const step1 = onboarding.querySelector('[data-step="1"]');
+    const step2 = onboarding.querySelector('[data-step="2"]');
+    const step3 = onboarding.querySelector('[data-step="3"]');
+    const step4 = onboarding.querySelector('[data-step="4"]');
+    const step5 = onboarding.querySelector('[data-step="5"]');
+    const nameInput = onboarding.querySelector('#onbName');
+    const btnS1 = onboarding.querySelector('#onbToStep2');
+    const btnS2 = onboarding.querySelector('#onbToStep3');
+    const btnS3 = onboarding.querySelector('#onbToStep4');
+    const msg = onboarding.querySelector('#onbMessage');
+
+    const stateOnb = { name: '', day: '', plan: '', goal: '' };
+
+    nameInput.addEventListener('input', () => {
+      stateOnb.name = nameInput.value.trim();
+      btnS1.disabled = stateOnb.name.length === 0;
+    });
+    btnS1.addEventListener('click', () => {
+      step1.hidden = true; step2.hidden = false; nameInput.blur();
+    });
+
+    step2.addEventListener('click', (e) => {
+      const b = e.target.closest('.btn.choice');
+      if(!b) return;
+      step2.querySelectorAll('.btn.choice').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      stateOnb.day = b.dataset.day;
+      btnS2.disabled = false;
+    });
+    btnS2.addEventListener('click', () => {
+      step2.hidden = true; step3.hidden = false;
+    });
+
+    step3.addEventListener('click', (e) => {
+      const b = e.target.closest('.btn.choice');
+      if(!b) return;
+      step3.querySelectorAll('.btn.choice').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      stateOnb.plan = b.dataset.plan;
+      btnS3.disabled = false;
+    });
+    btnS3.addEventListener('click', () => {
+      step3.hidden = true; step4.hidden = false;
+    });
+
+    step4.addEventListener('click', (e) => {
+      const b = e.target.closest('.btn.choice');
+      if(!b) return;
+      step4.querySelectorAll('.btn.choice').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      stateOnb.goal = b.dataset.goal;
+      // Step 5: Personalized message
+      step4.hidden = true; step5.hidden = false;
+      const name = stateOnb.name || 'Student';
+      let greeting = '';
+      if(stateOnb.goal === 'University') greeting = `Hey Future Publician ${name}!`;
+      else if(stateOnb.goal === 'Engineering') greeting = `Hey Future Engineer ${name}!`;
+      else if(stateOnb.goal === 'Medical') greeting = `Hey Future Doctor ${name}!`;
+      else greeting = `Welcome ${name}!`;
+      msg.textContent = greeting;
+
+      // Persist and redirect to dashboard (hide overlay)
+      localStorage.setItem(ONBOARD_KEY, JSON.stringify({ ...stateOnb, ts: Date.now() }));
+      setTimeout(() => {
+        onboarding.hidden = true;
+      }, 1300);
+    });
+  }
+
+  showOnboardingIfNeeded();
+
   // Elements
   const taskList = qs("#taskList");
   const addTaskBtn = qs("#addTaskBtn");
@@ -282,7 +366,7 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw)
         return {
-          tasks: sampleTasks(),
+          tasks: [],
           stars: 0,
           totalHours: "",
           notes: {},
@@ -304,14 +388,6 @@
   }
   function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
-  function sampleTasks() {
-    return [
-      { duration: "20 min", title: "International pocket book (3 pages)", done: false },
-      { duration: "30 min", title: "Vocabulary pocket book", done: false },
-      { duration: "1 hour", title: "MedWords review", done: false },
-      { duration: "45 min", title: "Anatomy diagrams", done: false },
-    ];
   }
 
   // Init render

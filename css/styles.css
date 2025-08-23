@@ -29,6 +29,85 @@ body {
   position: relative;
 }
 
+/* Onboarding Overlay */
+.onboarding-overlay[hidden] {
+  display: none;
+}
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+.onboard-card {
+  width: min(560px, 92vw);
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--pink-soft);
+  box-shadow: 0 20px 50px rgba(13, 86, 221, 0.15);
+  padding: 1.4rem 1.4rem 1.1rem;
+}
+.onboard-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  color: var(--pink);
+}
+.onb-q {
+  margin: 0 0 0.75rem;
+  font-weight: 700;
+}
+.onb-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 2px solid var(--pink-soft);
+  border-radius: 10px;
+  font: inherit;
+}
+.onb-input:focus {
+  outline: 2px solid var(--pink);
+}
+.btn-group {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--pink);
+  background: #fff;
+  color: #0d56dd;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+}
+.btn.primary {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+}
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn.choice.active {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+}
+.onboard-actions {
+  margin-top: 0.9rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.onb-message {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0d56dd;
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
 /* Targets Section */
 .targets-section {
   max-width: 1400px;

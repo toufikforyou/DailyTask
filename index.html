@@ -17,6 +17,63 @@
 
 <body>
     <div class="notebook-background"></div>
+    <!-- Onboarding Overlay -->
+    <section id="onboarding" class="onboarding-overlay" aria-modal="true" role="dialog" aria-labelledby="onbTitle"
+        hidden>
+        <div class="onboard-card">
+            <h2 id="onbTitle">Welcome to Study Planner</h2>
+            <div class="onboard-steps">
+                <!-- Step 1: Name -->
+                <div class="onboard-step" data-step="1">
+                    <p class="onb-q">👉 Please enter your name:</p>
+                    <input id="onbName" type="text" class="onb-input" placeholder="Your name" />
+                    <div class="onboard-actions">
+                        <button id="onbToStep2" class="btn primary" disabled>Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Day -->
+                <div class="onboard-step" data-step="2" hidden>
+                    <p class="onb-q">👉 Which day’s task do you want to plan?</p>
+                    <div class="btn-group">
+                        <button class="btn choice" data-day="today" id="onbDayToday">Today</button>
+                        <button class="btn choice" data-day="tomorrow" id="onbDayTomorrow">Tomorrow</button>
+                    </div>
+                    <div class="onboard-actions">
+                        <button id="onbToStep3" class="btn primary" disabled>Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Plan Type -->
+                <div class="onboard-step" data-step="3" hidden>
+                    <p class="onb-q">👉 What’s your study plan type?</p>
+                    <div class="btn-group">
+                        <button class="btn choice" data-plan="Academic" id="onbPlanAcademic">Academic</button>
+                        <button class="btn choice" data-plan="Admission" id="onbPlanAdmission">Admission</button>
+                    </div>
+                    <div class="onboard-actions">
+                        <button id="onbToStep4" class="btn primary" disabled>Next</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Dream Goal -->
+                <div class="onboard-step" data-step="4" hidden>
+                    <p class="onb-q">👉 What’s your dream goal?</p>
+                    <div class="btn-group">
+                        <button class="btn choice" data-goal="University" id="onbGoalUniversity">University</button>
+                        <button class="btn choice" data-goal="Engineering" id="onbGoalEngineering">Engineering</button>
+                        <button class="btn choice" data-goal="Medical" id="onbGoalMedical">Medical</button>
+                    </div>
+                </div>
+
+                <!-- Personalized Message -->
+                <div class="onboard-step" data-step="5" hidden>
+                    <div id="onbMessage" class="onb-message" role="status" aria-live="polite"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <header class="app-header">
         <div class="header-inner">
             <div class="title-block">
